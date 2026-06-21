@@ -1,4 +1,4 @@
-from project.adk.skill_base import AgentSkill
+from adk.skill_base import AgentSkill
 
 class CalculatorSkill(AgentSkill):
     def __init__(self):

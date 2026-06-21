@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Budget Orchestrator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2;">
+                    <h1>AI Budget <span>Orchestrator</span></h1>
+                    <p>Your intelligent financial planner and evaluator</p>
+                </div>
+                <div style="flex: 1; text-align: right;">
+                    <button type="button" id="settings-btn" style="background: none; border: none; box-shadow: none; cursor: pointer; color: var(--text-color); width: auto; height: auto;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- API Key Modal -->
+        <div id="api-modal" class="modal hidden">
+            <div class="modal-content glass-container" style="height: auto; max-width: 400px; padding: 24px; position: relative;">
+                <h2>Settings</h2>
+                <p style="margin-bottom: 16px; opacity: 0.8; font-size: 0.9rem;">Enter your Gemini API Key. It will be stored locally.</p>
+                <input type="password" id="api-key-input" placeholder="AIzaSy..." style="width: 100%; margin-bottom: 16px; height: 40px;">
+                <p style="margin-bottom: 8px; opacity: 0.8; font-size: 0.9rem;">Select Model:</p>
+                <select id="model-select" style="width: 100%; margin-bottom: 16px; height: 40px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 12px; color: white; padding: 0 10px; font-family: inherit;">
+                    <option value="gemini-flash-lite-latest" style="color: black;">gemini-flash-lite-latest</option>
+                    <option value="gemini-3.5-flash" style="color: black;">gemini-3.5-flash</option>
+                    <option value="gemini-3.1-flash-lite" style="color: black;">gemini-3.1-flash-lite</option>
+                    <option value="gemini-3-flash-preview" style="color: black;">gemini-3-flash-preview</option>
+                    <option value="gemini-3.1-pro-preview" style="color: black;">gemini-3.1-pro-preview</option>
+                    <option value="gemini-2.5-pro" style="color: black;">gemini-2.5-pro</option>
+                    <option value="gemini-pro-latest" style="color: black;">gemini-pro-latest</option>
+                    <option value="gemini-flash-latest" style="color: black;">gemini-flash-latest</option>
+                    <option value="gemini-2.5-flash" style="color: black;">gemini-2.5-flash</option>
+                    <option value="gemini-2.5-flash-lite" style="color: black;">gemini-2.5-flash-lite</option>
+                </select>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" id="close-modal-btn" style="background: rgba(255,255,255,0.1); width: auto; padding: 0 16px;">Cancel</button>
+                    <button type="button" id="save-api-key-btn" style="width: auto; padding: 0 16px;">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <main id="chat-container">
+            <div id="messages-container">
+                <!-- Messages will be injected here -->
+                <div class="message ai">
+                    <div class="avatar">AI</div>
+                    <div class="content">Hello! I am the Budget Orchestrator. What financial goals can I help you plan for today?</div>
+                </div>
+            </div>
+            
+            <div id="loading-indicator" class="hidden">
+                <div class="spinner"></div> Processing...
+            </div>
+        </main>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your financial request... e.g. I need a budget to save for a house" autocomplete="off">
+            <button id="send-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="background-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

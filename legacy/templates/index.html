@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Budget Planner</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;}
+        .chat-box { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; margin-bottom: 20px; background-color: white;}
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 5px; }
+        .user { background: #e3f2fd; text-align: right; }
+        .system { background: #f5f5f5; }
+        .hitl { background: #fff3cd; border: 1px solid #ffeeba; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;}
+        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px;}
+        button:hover { background: #0056b3; }
+        .approve-btn { background: #28a745; margin-top: 10px;}
+        .approve-btn:hover { background: #218838;}
+    </style>
+</head>
+<body>
+    <h1>AI Budget Planner & Expense Analyst</h1>
+    <p>Powered by Google Cloud Run & Gemini Developer API</p>
+    <input type="password" id="apiKey" placeholder="Enter your Gemini API Key here...">
+    
+    <div class="chat-box" id="chatBox"></div>
+    
+    <input type="text" id="prompt" placeholder="E.g., I need a budget to save for a house. My SSN is 123-45-6789">
+    <button onclick="sendMessage()">Send to AI Agents</button>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        let currentDraft = null;
+
+        function appendMsg(text, role) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + role;
+            div.innerText = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const prompt = document.getElementById('prompt').value;
+            const apiKey = document.getElementById('apiKey').value;
+            if(!prompt) return;
+            
+            appendMsg(prompt, 'user');
+            document.getElementById('prompt').value = '';
+            
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt: prompt, api_key: apiKey})
+            });
+            const data = await res.json();
+            handleResponse(data);
+        }
+        
+        async function approveBudget() {
+            if(!currentDraft) return;
+            const res = await fetch('/approve', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({budget: currentDraft})
+            });
+            const data = await res.json();
+            currentDraft = null;
+            handleResponse(data);
+        }
+
+        function handleResponse(data) {
+            if (data.status === 'awaiting_approval') {
+                currentDraft = data.budget;
+                const div = document.createElement('div');
+                div.className = 'msg hitl';
+                div.innerHTML = '<strong>⚠️ Security Manager: Human-In-The-Loop Approval Required!</strong><br><pre>' + JSON.stringify(currentDraft, null, 2) + '</pre><button class="approve-btn" onclick="approveBudget()">✅ Approve Budget</button>';
+                chatBox.appendChild(div);
+            } else {
+                appendMsg(data.response, 'system');
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

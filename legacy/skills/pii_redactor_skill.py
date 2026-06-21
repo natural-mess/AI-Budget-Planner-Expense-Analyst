@@ -1,5 +1,5 @@
 import re
-from project.adk.skill_base import AgentSkill
+from adk.skill_base import AgentSkill
 
 class PIIRedactorSkill(AgentSkill):
     def __init__(self):

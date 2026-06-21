@@ -1,10 +1,12 @@
-from project.adk.observability import Logger
+from adk.observability import Logger
+from adk.llm_client import LLMClient
 
 class BaseAgent:
     def __init__(self, name: str, context: str):
         self.name = name
         self.context = context
         self.skills = []
+        self.llm = LLMClient()
 
     def equip_skill(self, skill):
         self.skills.append(skill)
